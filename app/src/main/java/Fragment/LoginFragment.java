@@ -55,9 +55,9 @@ public class LoginFragment extends Fragment { // Beginning of class
     private View view;
 
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String FIRST_NAME = "firstName";
-    private static final String LAST_NAME = "lastName";
-    private static final String SUCCESS = "success";
+    public static final String FIRST_NAME = "firstName";
+    public static final String LAST_NAME = "lastName";
+    public static final String SUCCESS = "success";
 
     // Declare: Editable text fields, radio buttons, login/register button
     private EditText serverHost;
@@ -146,6 +146,10 @@ public class LoginFragment extends Fragment { // Beginning of class
         // SetOnClickListener for Register
         addListenerForRegister();
 
+        // can only press button once
+        signinButton.setEnabled(false);
+        registerButton.setEnabled(false);
+
 
         // Wire up the views
         return view;
@@ -162,7 +166,7 @@ public class LoginFragment extends Fragment { // Beginning of class
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { // differentiate whether textfields are filled in for login or register
                 // check fields with empty value
                 validateLogin();
-                // validateRegister(); // maybe no need here(?)
+                validateRegister(); // maybe no need here(?) actually needdddd!!!
 
 
             }
@@ -196,8 +200,97 @@ public class LoginFragment extends Fragment { // Beginning of class
         });
 
 
-
     }
+
+
+    private void addListenerForRegister() { // Beginning of listener for register
+        registerButton.setOnClickListener(v -> {
+            RegisterRequest request = new RegisterRequest(
+                    userName.getText().toString(),
+                    passWord.getText().toString(),
+                    email.getText().toString(),
+                    firstName.getText().toString(),
+                    lastName.getText().toString(),
+                    definedUserGender);
+
+            // Set up a handler that will process messages from the task and make updates on the UI thread
+            // This `Handler` class should be static or leaks might occur (anonymous android.os.Handler)
+            @SuppressLint("HandlerLeak") Handler uiThreadMessageHandler = new Handler() {
+                @Override
+                public void handleMessage(@NonNull Message msg) {
+                    Bundle bundle = msg.getData();
+                    Boolean isRegisterSuccess = bundle.getBoolean(SUCCESS);
+
+
+                    if(isRegisterSuccess) {
+                        Toast.makeText(view.getContext(),bundle.getString(FIRST_NAME)
+                                + " " + bundle.getString(LAST_NAME),Toast.LENGTH_SHORT).show();
+                        listener.notifyDone();
+                    } else {
+                        Toast.makeText(view.getContext(),"Register Failed",Toast.LENGTH_SHORT).show();
+                    }
+
+
+
+                } // End of handleMessage
+            }; // End of Handler
+
+            // Connect to Register Background task
+            String serverHostText = serverHost.getText().toString();
+            String serverPortText = serverPort.getText().toString();
+            RegisterTask task = new RegisterTask(uiThreadMessageHandler,request,
+                    serverHostText,serverPortText);
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.submit(task); // submit the register background task
+
+        });
+
+    } // End of listener for register
+
+
+
+
+    private void addListenerForLogin() { // Beginning of listener for login
+        signinButton.setOnClickListener(v -> {
+            LoginRequest request = new LoginRequest(
+                    userName.getText().toString(),
+                    passWord.getText().toString());
+
+            // Set up a handler that will process messages from the task and make updates on the UI thread
+            // This `Handler` class should be static or leaks might occur (anonymous android.os.Handler)
+            @SuppressLint("HandlerLeak")Handler uiThreadMessageHandler = new Handler() { // Beginning of Handler
+                @Override
+                public void handleMessage(@NonNull Message msg) { // Beginning of handleMessage
+                    Bundle bundle = msg.getData();
+                    Boolean isLoginSuccess = bundle.getBoolean(SUCCESS);
+
+
+                    if(isLoginSuccess) {
+                        Toast.makeText(view.getContext(),bundle.getString(FIRST_NAME)
+                                + " " + bundle.getString(LAST_NAME),Toast.LENGTH_SHORT).show();
+                        listener.notifyDone();
+                    } else {
+                        Toast.makeText(view.getContext(),"Sign-in Failed",Toast.LENGTH_SHORT).show();
+                    }
+                } // End of handleMessage
+            }; // End of Handler
+
+
+            // Connect to Login Background task
+            String serverHostText = serverHost.getText().toString();
+            String serverPortText = serverPort.getText().toString();
+            LoginTask task = new LoginTask(uiThreadMessageHandler,request,
+                    serverHostText,serverPortText);
+
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            executor.submit(task); // submit the login background task
+
+        });
+
+    } // End of listener for login
+
+
 
 
 
@@ -265,92 +358,8 @@ public class LoginFragment extends Fragment { // Beginning of class
 
     }
 
-    private void addListenerForLogin() { // Beginning of listener for login
-        signinButton.setOnClickListener(v -> {
-          LoginRequest realrequest = new LoginRequest(
-                  userName.getText().toString(),
-                  passWord.getText().toString());
-
-          // Set up a handler that will process messages from the task and make updates on the UI thread
-            // This `Handler` class should be static or leaks might occur (anonymous android.os.Handler)
-            @SuppressLint("HandlerLeak")Handler uiThreadMessageHandler = new Handler() { // Beginning of Handler
-              @Override
-              public void handleMessage(@NonNull Message msg) { // Beginning of handleMessage
-                  Bundle bundle = msg.getData();
-                  Boolean isLoginSuccess = bundle.getBoolean(SUCCESS);
 
 
-                  if(isLoginSuccess) {
-                      Toast.makeText(view.getContext(),bundle.getString(FIRST_NAME)
-                      + " " + bundle.getString(LAST_NAME),Toast.LENGTH_SHORT).show();
-                      listener.notifyDone();
-                  } else {
-                      Toast.makeText(view.getContext(),"Sign-in Failed",Toast.LENGTH_SHORT).show();
-                  }
-              } // End of handleMessage
-          }; // End of Handler
-
-
-            // Connect to Login Background task
-            String serverHostText = serverHost.getText().toString();
-            String serverPortText = serverPort.getText().toString();
-            LoginTask task = new LoginTask(uiThreadMessageHandler,realrequest,
-                    serverHostText,serverPortText);
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(task); // submit the login background task
-
-        });
-
-    } // End of listener for login
-
-    private void addListenerForRegister() { // Beginning of listener for register
-        registerButton.setOnClickListener(v -> {
-            RegisterRequest realrequest = new RegisterRequest(
-                    userName.getText().toString(),
-                    passWord.getText().toString(),
-                    email.getText().toString(),
-                    firstName.getText().toString(),
-                    lastName.getText().toString(),
-                    definedUserGender);
-
-            // Set up a handler that will process messages from the task and make updates on the UI thread
-            // This `Handler` class should be static or leaks might occur (anonymous android.os.Handler)
-            @SuppressLint("HandlerLeak") Handler uiThreadMessageHandler = new Handler() {
-                @Override
-                public void handleMessage(@NonNull Message msg) {
-                    Bundle bundle = msg.getData();
-                    Boolean isRegisterSuccess = bundle.getBoolean(SUCCESS);
-
-
-
-
-                    if(isRegisterSuccess) {
-                        Toast.makeText(view.getContext(),bundle.getString(FIRST_NAME)
-                                + " " + bundle.getString(LAST_NAME),Toast.LENGTH_SHORT).show();
-                        listener.notifyDone();
-                    } else {
-                        Toast.makeText(view.getContext(),"Register Failed",Toast.LENGTH_SHORT).show();
-                    }
-
-
-
-
-                } // End of handleMessage
-            }; // End of Handler
-
-            // Connect to Register Background task
-            String serverHostText = serverHost.getText().toString();
-            String serverPortText = serverPort.getText().toString();
-            RegisterTask task = new RegisterTask(uiThreadMessageHandler,realrequest,
-                    serverHostText,serverPortText);
-
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            executor.submit(task); // submit the register background task
-
-        });
-
-    } // End of listener for register
 
 
 

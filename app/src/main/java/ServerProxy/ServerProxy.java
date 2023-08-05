@@ -21,6 +21,18 @@ public class ServerProxy {
 
     protected Gson gson = new Gson();
 
+    private static ServerProxy proxy;
+
+
+    public synchronized static ServerProxy initialize()
+    {
+        if (proxy == null){
+            proxy = new ServerProxy();
+        }
+        return proxy;
+    }
+
+
 
     // Getters and Setters
     public void setServerHost(String serverHost) {

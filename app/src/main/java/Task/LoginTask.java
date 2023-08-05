@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import Fragment.LoginFragment;
 import Request.LoginRequest;
 import Result.LoginResult;
 import ServerProxy.ServerProxy;
@@ -18,24 +19,21 @@ public class LoginTask implements Runnable{
 
     private final ServerProxy proxy;
 
-    private String firstName;
-    private String lastName;
-    private boolean isSuccess;
+    private String firstName = "";
+    private String lastName = "";
 
-    private static final String FIRST_NAME = "firstName";
-    private static final String LAST_NAME = "lastName";
-    private static final String SUCCESS = "success";
+
 
     public LoginTask(Handler messageHandler, LoginRequest request, String serverHost, String serverPort) {
         this.messageHandler = messageHandler;
         this.request = request;
-
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
         proxy = new ServerProxy();
         proxy.setServerHost(serverHost);
         proxy.setServerPort(serverPort);
 
-        this.serverHost = serverHost;
-        this.serverPort = serverPort;
+
     }
 
     @Override
@@ -47,26 +45,24 @@ public class LoginTask implements Runnable{
             task.setData(result.getPersonID());
             firstName = task.getFirstName();
             lastName = task.getLastName();
-            isSuccess = true;
-        } else {
-            isSuccess = false;
+
         }
 
-        sendMessage();
+        sendMessage(result);
 
     }
 
     // Send message (background thread to UI thread)
-    private void sendMessage() {
+    private void sendMessage(LoginResult result) {
         Message message = Message.obtain();
-
         Bundle messageBundle = new Bundle();
+        Boolean resultIsSuccess = result.isSuccess();
 
-        if(isSuccess) {
-            messageBundle.putString(FIRST_NAME, firstName);
-            messageBundle.putString(LAST_NAME,lastName);
+        if(resultIsSuccess) {
+            messageBundle.putString(LoginFragment.FIRST_NAME, firstName);
+            messageBundle.putString(LoginFragment.LAST_NAME,lastName);
         }
-        messageBundle.putBoolean(SUCCESS, isSuccess);
+        messageBundle.putBoolean(LoginFragment.SUCCESS, result.isSuccess());
 
         message.setData(messageBundle);
         messageHandler.sendMessage(message);
