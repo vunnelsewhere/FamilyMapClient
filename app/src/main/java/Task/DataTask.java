@@ -1,5 +1,6 @@
 package Task;
 
+// Main Activity
 import DataCache.DataCache;
 import Result.EventResult;
 import Result.PersonResult;
@@ -28,10 +29,14 @@ public class DataTask {
         EventResult result2 = proxy.getEvents(authToken);
         data.setData(personID, result1, result2);
 
+        // Main Activity
         firstName = data.getUser().getFirstName();
         lastName = data.getUser().getLastName();
     }
 
+
+
+    // Getters and Setters - Main Activity
     public String getFirstName() {
         return firstName;
     }

@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import Model.Person;
-import Model.Event;
 
+
+import Model.Person;
 import Result.EventResult;
 import Result.PersonResult;
 
@@ -31,16 +31,26 @@ public class DataCache {
     }
 
     // Variable Declarations
+
+    // Main Activity
     private Person user;
     private final Set<Person> userPeople = new HashSet<>();
     private final Map<String, Person> personByID = new HashMap<>();
 
-    public void setData(String userPersonID, PersonResult people, EventResult events) {
-        setPeople(people);
 
+
+
+    public void setData(String userPersonID, PersonResult people, EventResult events) {
+
+        // Main Activity
+        setPeople(people);
         user = getPersonByID(userPersonID);
 
     }
+
+
+
+    // Getters and Setters - Main Activity
 
     public Person getUser() {
         return user;

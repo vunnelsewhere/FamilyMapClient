@@ -6,11 +6,9 @@ import android.os.Bundle;
 
 import Fragment.LoginFragment;
 import Fragment.MapFragment;
-import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-
-import Request.LoginRequest;
 
 
 // main activity initially wants to embed the first fragment (login)

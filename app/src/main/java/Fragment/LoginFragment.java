@@ -368,6 +368,10 @@ public class LoginFragment extends Fragment { // Beginning of class
 
 } // End of Class
 
+/*
+ * extends "Fragment" - means this class is a fragment that can be embedded within an activity
+ */
+
 
 /*
  * OnCreate method is actually divided into two parts in a fragment
@@ -379,3 +383,4 @@ public class LoginFragment extends Fragment { // Beginning of class
  * You code goes in the public void run() method
  * Preferred when you don't need to return a result
  */
+

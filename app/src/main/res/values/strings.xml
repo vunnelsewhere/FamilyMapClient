@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">FamilyMapClient</string>
 
+    <!--Login Fragment-->
     <!-- Field Names -->
     <string name="serverHost">Server Host:</string>
     <string name="serverPort">Server Port:</string>
@@ -19,4 +20,23 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <!--Map Fragment-->
+
+    <!--User Interface-->
+    <string name="mapFragmentMessage">This is my map fragment!</string>
+
+    <!--Action Bar Contents-->
+    <string name="searchItem">Search</string>
+    <string name="settingsItem">Settings</string>
+
+
+
+    <!--Search Activity-->
+    <string name= "searchActivityMessage">This is my search activity</string>
+
+
+
+    <!--Settings Activity-->
+    <string name= "settingsActivityMessage">This is my settings activity</string>
 </resources>
