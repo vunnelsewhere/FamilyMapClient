@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="Fragments.MapFragment">
+    tools:context="Fragment.MapFragment">
 
     <fragment
         android:id="@+id/map"
@@ -36,7 +36,10 @@
             android:paddingTop="30dp"
             android:text="@string/mapFragmentMessage"
             android:textAlignment="center"
-            android:textSize="20sp"/>
+            android:textSize="20sp"
+            android:onClick="onClick"
+            android:clickable="true"/>
+
     </LinearLayout>
 
 </RelativeLayout>

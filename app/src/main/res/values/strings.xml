@@ -34,6 +34,10 @@
     <string name="mapFragmentMessage">Click on a marker to see event details</string>
 
 
+    <!--Person Activity-->
+    <string name="personActivityMessage">This is my person activity</string>
+
+
     <!--Search Activity-->
     <string name= "searchActivityMessage">This is my search activity</string>
 

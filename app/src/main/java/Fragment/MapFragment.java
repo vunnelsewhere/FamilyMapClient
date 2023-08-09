@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bignerdranch.android.familymapclient.PersonActivity;
 import com.bignerdranch.android.familymapclient.SearchActivity;
 import com.bignerdranch.android.familymapclient.SettingsActivity;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -56,6 +57,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private ImageView textViewIcon;
 
     private Map<String, Float> markerColour = new HashMap<>();
+    private static final String PERSONID_KEY = "PERSONID";
 
 
     // Overridden to inflate the layout, set up the map, and initialize other necessary components
@@ -194,15 +196,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     // It sets up the UI to display information related to the clicked event/person
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-        Event currentEvent = (Event) marker.getTag();
-        Person currentPerson = dataCache.getPersonByID(currentEvent.getPersonID());
+        Event currentEvent = (Event) marker.getTag(); // current clicked event
+        Person currentPerson = dataCache.getPersonByID(currentEvent.getPersonID()); // person associated with the event
 
-        updateGenderIcon(currentPerson);
+        updatetextViewIcon(currentPerson);
+        updatetextViewBox(currentPerson,currentEvent);
+        addListenerForTextView(textViewBox,currentPerson); // question here
 
         return false; // default(?)
     }
 
-    private void updateGenderIcon(Person currentClickedPerson) {
+    private void updatetextViewIcon(Person currentClickedPerson) {
         if(currentClickedPerson.getGender().equalsIgnoreCase("m")) {
             Drawable maleIcon;
             maleIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_male).colorRes(R.color.maleIcon);
@@ -215,12 +219,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
     }
 
-
-
-    // method creates the text to be displayed when a marker is clicked, showing information about the person and event
-    private void makeEventText(Person person, Event event) {
-
+    private void updatetextViewBox(Person currentClickedPerson, Event currentClickedEvent) {
+        String textMessage = currentClickedPerson.getFirstName() + " " + currentClickedPerson.getLastName()
+                + "\n" + currentClickedEvent.getEventType() + ": " + currentClickedEvent.getCity() +
+                " " + currentClickedEvent.getCountry() + " (" + currentClickedEvent.getYear() + ")";
+        textViewBox.setText(textMessage);
     }
+
+    private void addListenerForTextView(TextView theBox, Person currentClickedPerson) {
+        theBox.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), PersonActivity.class);
+                intent.putExtra(PERSONID_KEY, currentClickedPerson.getPersonID()); // need person ID to pull up info
+                startActivity(intent);
+            }
+        });
+    }
+
+
 
     // method creates lines between events based on the selected settings
     private void makeLinesBySettings(Person selectedPerson, Event selectedEvent) {
