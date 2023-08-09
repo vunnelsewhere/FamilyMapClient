@@ -56,6 +56,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     // Overridden to inflate the layout, set up the map, and initialize other necessary components
     @Override
     public View onCreateView(@NonNull LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+        dataCache = DataCache.getInstance(); // don't forget to get an instance of the datacache class!!!!! Otherwise cannot invoke anyyyyy methods
         super.onCreateView(layoutInflater, container, savedInstanceState);
         View view = layoutInflater.inflate(R.layout.fragment_map, container, false);
 
@@ -90,13 +91,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map.setOnMapLoadedCallback(this);
 
 
-        // Set markers for all events (appear when the map is first shown)
-        //createEventMarkers();
-
         // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon(BitmapDescriptorFactory.defaultMarker(200)));
-        map.animateCamera(CameraUpdateFactory.newLatLng(sydney));
+        //LatLng sydney = new LatLng(-34, 151);
+        //map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon(BitmapDescriptorFactory.defaultMarker(200)));
+        // map.animateCamera(CameraUpdateFactory.newLatLng(sydney));
+
+        // Set markers for all events (appear when the map is first shown)
+        createEventMarkers();
     }
 
 
@@ -157,6 +158,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     // used to show all event markers on the map
     public void createEventMarkers() {
 
+        /*
 
         Set<Event> allEvents = dataCache.getAllEvent();
         float customHue = 220;
@@ -169,6 +171,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     .icon(BitmapDescriptorFactory.defaultMarker(customHue)));
             marker.setTag(event);
         }
+
+         */
 
 
     }
