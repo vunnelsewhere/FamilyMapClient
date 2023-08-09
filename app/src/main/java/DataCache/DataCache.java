@@ -5,6 +5,11 @@ package DataCache;
  * Once we've downloaded the family tree data from the server, we're going to store it in the DataCache
  */
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +19,7 @@ import java.util.Set;
 
 
 import Model.Person;
+import Model.Event;
 import Result.EventResult;
 import Result.PersonResult;
 
@@ -34,17 +40,26 @@ public class DataCache {
 
     // Main Activity
     private Person user;
-    private final Set<Person> userPeople = new HashSet<>();
-    private final Map<String, Person> personByID = new HashMap<>();
+
+    private final Set<Person> allPeople = new HashSet<>();
+    private final Map<String, Person> peopleWithID = new HashMap<>(); // personID, person
+
+    private final Set<Event> allEvent = new HashSet<>();
+    private final Map<String, Event> eventWithID = new HashMap<>();
+    private final Set<String> eventTypes = new HashSet<>(); // types of events (different colors)
 
 
 
-
+    // First major step to set data after register/sign-in
     public void setData(String userPersonID, PersonResult people, EventResult events) {
 
         // Main Activity
         setPeople(people);
         user = getPersonByID(userPersonID);
+
+        // event data
+        setEvents(events);
+
 
     }
 
@@ -57,23 +72,53 @@ public class DataCache {
     }
 
     public Person getPersonByID(String personID) {
-        return personByID.get(personID);
+        return peopleWithID.get(personID); // return the associated person (user) with personID
     }
 
     public void setPeople(PersonResult people) {
-        List<Person> allPeopleList = people.getData();
+        ArrayList<Person> allPeopleList = people.getData();
 
         // Loop through all the people
         for (Person person : allPeopleList) {
             // Add the people for the user
-            userPeople.add(person);
-            personByID.put(person.getPersonID(), person);
+            allPeople.add(person);
+            peopleWithID.put(person.getPersonID(), person);
         }
     }
 
+    public void setEvents(EventResult result) {
+        ArrayList<Event> allEventsList = result.getData();
+
+        // Loop through all the event
+        for(Event event: allEventsList) {
+            allEvent.add(event);
+            eventWithID.put(event.getEventID(),event);
+        }
+
+    }
 
 
+    /*************************** General Getters ***************************/
 
+    public Set<Person> getAllPeople() {
+        return allPeople;
+    }
+
+    public Map<String, Person> getPeopleWithID() {
+        return peopleWithID;
+    }
+
+    public Set<Event> getAllEvent() {
+        return allEvent;
+    }
+
+    public Map<String, Event> getEventWithID() {
+        return eventWithID;
+    }
+
+    public Set<String> getEventTypes() {
+        return eventTypes;
+    }
 }
 
 

@@ -11,7 +11,7 @@ public class DataTask {
     // Variable Declaration
     private String authToken;
     private final ServerProxy proxy;
-    private final DataCache data;
+    private final DataCache dataCache;
 
     private String firstName;
     private String lastName;
@@ -21,17 +21,17 @@ public class DataTask {
         proxy = new ServerProxy();
         proxy.setServerHost(serverHost);
         proxy.setServerPort(serverPort);
-        data = DataCache.getInstance();
+        dataCache = DataCache.getInstance();
     }
 
     public void setData(String personID) {
         PersonResult result1 = proxy.getPeople(authToken);
         EventResult result2 = proxy.getEvents(authToken);
-        data.setData(personID, result1, result2);
+        dataCache.setData(personID, result1, result2);
 
         // Main Activity
-        firstName = data.getUser().getFirstName();
-        lastName = data.getUser().getLastName();
+        firstName = dataCache.getUser().getFirstName();
+        lastName = dataCache.getUser().getLastName();
     }
 
 

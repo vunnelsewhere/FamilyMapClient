@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -29,9 +30,12 @@ import com.bignerdranch.android.familymapclient.R;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import Model.Person;
 import Model.Event;
+
+import DataCache.DataCache;
 
 
 // Android Iconify Library - draw dynamically customizable icons
@@ -43,6 +47,7 @@ import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener { // Beginning of class
     private GoogleMap map;
+    private DataCache dataCache;
 
     private TextView textViewBox;
     private ImageView textViewIcon;
@@ -84,9 +89,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map.clear();
         map.setOnMapLoadedCallback(this);
 
+
+        // Set markers for all events (appear when the map is first shown)
+        //createEventMarkers();
+
         // Add a marker in Sydney and move the camera
         LatLng sydney = new LatLng(-34, 151);
-        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon(BitmapDescriptorFactory.defaultMarker(200)));
         map.animateCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
@@ -142,6 +151,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public boolean onMarkerClick(@NonNull Marker marker) {
 
         return false;
+    }
+
+
+    // used to show all event markers on the map
+    public void createEventMarkers() {
+
+
+        Set<Event> allEvents = dataCache.getAllEvent();
+        float customHue = 220;
+
+        // Create event markers pulled from data cache
+        for(Event event: allEvents) {
+            LatLng currentPosition = new LatLng(event.getLatitude(),event.getLongitude());
+            Marker marker = map.addMarker(new MarkerOptions()
+                    .position(currentPosition)
+                    .icon(BitmapDescriptorFactory.defaultMarker(customHue)));
+            marker.setTag(event);
+        }
+
+
     }
 
     // method sets up event parkers on the map based on the provided settings

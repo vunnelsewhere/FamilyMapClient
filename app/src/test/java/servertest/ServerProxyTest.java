@@ -28,6 +28,16 @@ public class ServerProxyTest {
     private RegisterRequest goodRequest2 = new RegisterRequest("sallynelson","sleepnow","sally@gmail.com",
             "Sally","Nelson","f");
 
+    private RegisterRequest goodRequest3 = new RegisterRequest("sammynelson","what","sammy@gmail.com",
+            "Sammy","Nelson","f");
+
+    private RegisterRequest goodRequest4 = new RegisterRequest("far","away","gmail.com.hk",
+            "Far","Away","m");
+
+    private RegisterRequest badRequest1 = new RegisterRequest("today","is","awesome",
+            "Today","Awesome","m");
+    private RegisterRequest badRequest2 = new RegisterRequest("todayy","iss","badd",
+            "Todayy","Badd","f");
     private LoginRequest forGoodRequest2 = new LoginRequest("sallynelson","sleepnow");
 
 
@@ -96,21 +106,53 @@ public class ServerProxyTest {
 
     @Test
     public void GetPeoplePass() {
+        System.out.println("Get people pass Test");
+        RegisterResult goodResult = proxy.register(goodRequest3);
+        String token = goodResult.getAuthtoken();
+
+        PersonResult result = proxy.getPeople(token);
+        assertNotNull(result);
+        assertTrue(result.isSuccess());
+        assertNotNull(result.getData());
 
     }
 
     @Test
     public void GetPeopleFail() {
+        System.out.println("Get people fail Test - invalid authtoken");
+        RegisterResult badResult = proxy.register(badRequest1);
+        String token = "789789374";
+
+        PersonResult result = proxy.getPeople(token);
+        assertNotNull(result);
+        assertFalse(result.isSuccess());
+        assertNull(result.getData());
 
     }
 
     @Test
     public void GetEventsPass() {
+        System.out.println("Get event pass Test");
+        RegisterResult goodResult = proxy.register(goodRequest4);
+        String token = goodResult.getAuthtoken();
+
+        EventResult result = proxy.getEvents(token);
+        assertNotNull(result);
+        assertTrue(result.isSuccess());
+        assertNotNull(result.getData());
 
     }
 
     @Test
     public void GetEventsFail() {
+        System.out.println("Get event fail Test - invalid authtoken");
+        RegisterResult badResult = proxy.register(badRequest2);
+        String token = "789789374";
+
+        EventResult result = proxy.getEvents(token);
+        assertNotNull(result);
+        assertFalse(result.isSuccess());
+        assertNull(result.getData());
 
     }
 }
