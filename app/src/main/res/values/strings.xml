@@ -23,13 +23,15 @@
 
     <!--Map Fragment-->
 
-    <!--User Interface-->
-    <string name="mapFragmentMessage">This is my map fragment!</string>
 
     <!--Action Bar Contents-->
     <string name="searchItem">Search</string>
     <string name="settingsItem">Settings</string>
 
+
+    <!--Text View Content-->
+    <string name="iconContent"></string>
+    <string name="mapFragmentMessage">Click on a marker to see event details</string>
 
 
     <!--Search Activity-->
@@ -39,4 +41,21 @@
 
     <!--Settings Activity-->
     <string name= "settingsActivityMessage">This is my settings activity</string>
+    <string name= "lifeStoryLines">Life Story Lines</string>
+    <string name= "showLifeStoryLines">SHOW LIFE STORY LINES</string>
+    <string name= "familyTreeLines">Family Tree Lines</string>
+    <string name= "showFamilyTreeLines">SHOW FAMILY TREE LINES</string>
+    <string name= "spouseLines">Spouse Lines</string>
+    <string name= "showSpouseLines">SHOW SPOUSE LINES</string>
+    <string name= "fatherSide">Father\'s Side</string>
+    <string name= "filterFatherSide">FILTER BY FATHER\'S SIDE OF FAMILY</string>
+    <string name= "motherSide">Mother\'s Side</string>
+    <string name= "filterMotherSide">FILTER BY MOTHER\'S SIDE OF FAMILY</string>
+    <string name= "maleEvents">Male Events</string>
+    <string name= "filterMaleEvents">FILTER EVENTS BASED ON GENDER</string>
+    <string name= "femaleEvents">Female Events</string>
+    <string name= "filterFemaleEvents">FILTER EVENTS BASED ON GENDER</string>
+    <string name= "logOut">Logout</string>
+    <string name= "showLogOut">RETURN TO LOGIN SCREEN</string>
+
 </resources>

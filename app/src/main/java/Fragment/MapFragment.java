@@ -1,6 +1,7 @@
 package Fragment;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,6 +12,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bignerdranch.android.familymapclient.SearchActivity;
 import com.bignerdranch.android.familymapclient.SettingsActivity;
@@ -41,6 +44,9 @@ import com.joanzapata.iconify.fonts.FontAwesomeModule;
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback, GoogleMap.OnMarkerClickListener { // Beginning of class
     private GoogleMap map;
 
+    private TextView textViewBox;
+    private ImageView textViewIcon;
+
 
     // Overridden to inflate the layout, set up the map, and initialize other necessary components
     @Override
@@ -53,8 +59,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         setHasOptionsMenu(true); // map fragment has its own options menu
         Iconify.with(new FontAwesomeModule()); // in onCreate method, initialize the Iconify library
 
+        // textview (icon, text)
+        textViewBox = view.findViewById(R.id.textViewBox);
+        textViewIcon = view.findViewById(R.id.textViewIcon);
+
+        Drawable currentIcon;
+        currentIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_android).colorRes(R.color.mapIcon);
+        textViewIcon.setImageDrawable(currentIcon);
+
+        // Get the Map Fragment
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
 
         return view;
     }
@@ -65,6 +81,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
+        map.clear();
         map.setOnMapLoadedCallback(this);
 
         // Add a marker in Sydney and move the camera
