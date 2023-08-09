@@ -4,4 +4,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#949494</color>
     <color name="mapIcon">#5ced73</color>
+    <color name="maleIcon">#89CFF0</color>
+    <color name="femaleIcon">#ffb7ce</color>
 </resources>

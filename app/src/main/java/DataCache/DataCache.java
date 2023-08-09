@@ -48,6 +48,11 @@ public class DataCache {
     private final Map<String, Event> eventWithID = new HashMap<>();
     private final Set<String> eventTypes = new HashSet<>(); // types of events (different colors)
 
+    // Color for Markers
+    private float[] colourBank;
+    private final Map<String, Float> eventTypeColours = new HashMap<>(); // store colors associated with different event type
+
+
 
 
     // First major step to set data after register/sign-in
@@ -60,6 +65,9 @@ public class DataCache {
         // event data
         setEvents(events);
 
+        // Set Color for different event type
+        setColorBank();
+        setMarkerColours();
 
     }
 
@@ -93,6 +101,36 @@ public class DataCache {
         for(Event event: allEventsList) {
             allEvent.add(event);
             eventWithID.put(event.getEventID(),event);
+
+            setEventTypesArray(event);
+        }
+
+    }
+
+    private void setEventTypesArray(Event currentEvent) {
+        String eventType = currentEvent.getEventType().toLowerCase();
+        eventTypes.add(eventType);
+    }
+    private void setColorBank() {
+        colourBank = new float[]{BitmapDescriptorFactory.HUE_AZURE,
+                BitmapDescriptorFactory.HUE_BLUE,
+                BitmapDescriptorFactory.HUE_CYAN,
+                BitmapDescriptorFactory.HUE_GREEN,
+                BitmapDescriptorFactory.HUE_MAGENTA,
+                BitmapDescriptorFactory.HUE_ORANGE,
+                BitmapDescriptorFactory.HUE_RED,
+                BitmapDescriptorFactory.HUE_ROSE,
+                BitmapDescriptorFactory.HUE_VIOLET,
+                BitmapDescriptorFactory.HUE_YELLOW};
+
+    }
+
+    public void setMarkerColours() { // 10 different types in database
+        int count = 0;
+        for(String eventType: eventTypes) {
+            int colourIndex = count % 10;
+            eventTypeColours.put(eventType, getColourBank()[colourIndex]);
+            count++;
         }
 
     }
@@ -118,6 +156,14 @@ public class DataCache {
 
     public Set<String> getEventTypes() {
         return eventTypes;
+    }
+
+    public float[] getColourBank() {
+        return colourBank;
+    }
+
+    public Map<String, Float> getEventTypeColours() {
+        return eventTypeColours;
     }
 }
 

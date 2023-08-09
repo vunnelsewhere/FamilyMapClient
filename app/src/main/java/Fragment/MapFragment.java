@@ -21,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -30,6 +31,8 @@ import com.bignerdranch.android.familymapclient.R;
 import com.google.android.gms.maps.model.Polyline;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import Model.Person;
@@ -51,6 +54,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private TextView textViewBox;
     private ImageView textViewIcon;
+
+    private Map<String, Float> markerColour = new HashMap<>();
 
 
     // Overridden to inflate the layout, set up the map, and initialize other necessary components
@@ -90,6 +95,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map.clear();
         map.setOnMapLoadedCallback(this);
 
+        // interactive map allows the user to zoom in and out
+        UiSettings settings = map.getUiSettings();
+        settings.setZoomControlsEnabled(true);
 
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);
@@ -97,7 +105,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         // map.animateCamera(CameraUpdateFactory.newLatLng(sydney));
 
         // Set markers for all events (appear when the map is first shown)
-        createEventMarkers();
+        createEventMarkersBySetting();
+
+        map.setOnMarkerClickListener(this); // need this for markers to be clickable, so onMarkerClick will function
     }
 
 
@@ -146,17 +156,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         return super.onContextItemSelected(item); // default
     }
 
-    // method is called when a marker on the map is clicked.
-    // It sets up the UI to display information related to the clicked event/person
-    @Override
-    public boolean onMarkerClick(@NonNull Marker marker) {
-
-        return false;
-    }
 
 
     // used to show all event markers on the map
-    public void createEventMarkers() {
+    public void createEventMarkersBySetting() {
 
         /*
 
@@ -174,13 +177,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
          */
 
+        Set<Event> allEvents = dataCache.getAllEvent();
+        markerColour = dataCache.getEventTypeColours();
+
+        for(Event event: allEvents) {
+            LatLng currentPosition = new LatLng(event.getLatitude(),event.getLongitude());
+            Marker marker = map.addMarker(new MarkerOptions()
+                    .position(currentPosition)
+                    .icon(BitmapDescriptorFactory.defaultMarker(markerColour.get(event.getEventType().toLowerCase()))));
+            marker.setTag(event);
+        }
 
     }
 
-    // method sets up event parkers on the map based on the provided settings
-    private void setEventsMarkersBySetting() {
+    // method is called when a marker on the map is clicked.
+    // It sets up the UI to display information related to the clicked event/person
+    @Override
+    public boolean onMarkerClick(@NonNull Marker marker) {
+        Event currentEvent = (Event) marker.getTag();
+        Person currentPerson = dataCache.getPersonByID(currentEvent.getPersonID());
 
+        updateGenderIcon(currentPerson);
+
+        return false; // default(?)
     }
+
+    private void updateGenderIcon(Person currentClickedPerson) {
+        if(currentClickedPerson.getGender().equalsIgnoreCase("m")) {
+            Drawable maleIcon;
+            maleIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_male).colorRes(R.color.maleIcon);
+            textViewIcon.setImageDrawable(maleIcon);
+        }
+        else if(currentClickedPerson.getGender().equalsIgnoreCase("f")) {
+            Drawable femaleIcon;
+            femaleIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_female).colorRes(R.color.femaleIcon);
+            textViewIcon.setImageDrawable(femaleIcon);
+        }
+    }
+
+
 
     // method creates the text to be displayed when a marker is clicked, showing information about the person and event
     private void makeEventText(Person person, Event event) {
