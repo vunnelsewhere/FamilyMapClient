@@ -36,9 +36,7 @@
             android:paddingTop="30dp"
             android:text="@string/mapFragmentMessage"
             android:textAlignment="center"
-            android:textSize="20sp"
-            android:onClick="onClick"
-            android:clickable="true"/>
+            android:textSize="20sp"/>
 
     </LinearLayout>
 

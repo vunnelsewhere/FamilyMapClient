@@ -110,6 +110,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         createEventMarkersBySetting();
 
         map.setOnMarkerClickListener(this); // need this for markers to be clickable, so onMarkerClick will function
+
+        // textview is not clickable for now
+        textViewBox.setClickable(false);
     }
 
 
@@ -201,6 +204,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         updatetextViewIcon(currentPerson);
         updatetextViewBox(currentPerson,currentEvent);
+
+        textViewBox.setClickable(true);
         addListenerForTextView(textViewBox,currentPerson); // question here
 
         return false; // default(?)
