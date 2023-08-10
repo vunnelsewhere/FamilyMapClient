@@ -1,6 +1,7 @@
 package Fragment;
 
 import android.content.Intent;
+import android.graphics.Color; // draw polyline
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
@@ -40,9 +41,10 @@ import Model.Person;
 import Model.Event;
 
 import DataCache.DataCache;
-
+import Setting.Settings;
 
 // Android Iconify Library - draw dynamically customizable icons
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.Iconify;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
@@ -57,6 +59,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private ImageView textViewIcon;
 
     private Map<String, Float> markerColour = new HashMap<>();
+    private Settings settings;
+    private Polyline lifeStoryLine;
+    public static final int ORANGE_DARK = 0xffff8800;
     private static final String PERSONID_KEY = "PERSONID";
 
 
@@ -64,6 +69,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public View onCreateView(@NonNull LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
         dataCache = DataCache.getInstance(); // don't forget to get an instance of the datacache class!!!!! Otherwise cannot invoke anyyyyy methods
+        settings = Settings.getInstance();
         super.onCreateView(layoutInflater, container, savedInstanceState);
         View view = layoutInflater.inflate(R.layout.fragment_map, container, false);
 
@@ -100,6 +106,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         // interactive map allows the user to zoom in and out
         UiSettings settings = map.getUiSettings();
         settings.setZoomControlsEnabled(true);
+
+        getDefaultSettings(); // all settings should be on
 
         // Add a marker in Sydney and move the camera
         //LatLng sydney = new LatLng(-34, 151);
@@ -205,8 +213,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         updatetextViewIcon(currentPerson);
         updatetextViewBox(currentPerson,currentEvent);
 
-        textViewBox.setClickable(true);
+        textViewBox.setClickable(true); // set it to be clickable when a marker is clicked
         addListenerForTextView(textViewBox,currentPerson); // question here
+
+        // clear the 3 lines beforehead
+
+        // draw the lines
+        drawLinesBySettings(currentPerson, currentEvent);
 
         return false; // default(?)
     }
@@ -242,17 +255,47 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         });
     }
 
+    private void getDefaultSettings() {
+        settings.setIsLifeStoryLineOn(true);
+        settings.setIsFamilyTreeLineOn(true);
+        settings.setIsSpouseLineOn(true);
+        settings.setShowFathersSide(true);
+        settings.setShowMothersSide(true);
+        settings.setShowMaleEvents(true);
+        settings.setShowFemaleEvents(true);
+    }
+
 
 
     // method creates lines between events based on the selected settings
-    private void makeLinesBySettings(Person selectedPerson, Event selectedEvent) {
+    private void drawLinesBySettings(Person selectedPerson, Event selectedEvent) {
+
+        // Create Life Story Line
+        if(settings.isLifeStoryLineOn()) {
+            createLifeEventsLines(selectedPerson.getPersonID());
+        }
+    }
+
+
+    // method creates lines representing a person's life events on the map
+    private void createLifeEventsLines(String personID) {
+        if(lifeStoryLine != null) { // clear previously generated lifestoryline for other person
+            lifeStoryLine.remove();
+        }
+
+        ArrayList<Event> lifeStoryList = dataCache.getLifeStoryEventsForSpecifiedPerson(personID);
+        ArrayList<LatLng> eventPoints = new ArrayList<>();
+        for(int i = 0; i < lifeStoryList.size(); i++) {
+            Event currentEvent = lifeStoryList.get(i);
+            Float currentLatitude = currentEvent.getLatitude();
+            Float currentLongitude = currentEvent.getLongitude();
+            eventPoints.add(new LatLng(currentLatitude,currentLongitude));
+        }
+
+        lifeStoryLine = map.addPolyline(new PolylineOptions().addAll(eventPoints).color(ORANGE_DARK)); // .color(Color.GREEN) OR .color(selfDefined)
 
     }
 
-    // method reads the user's preferences for displaying events and sets them accordingly
-    private void setSetting() {
-
-    }
 
     // method creates lines connecting a person to their parents and recursively create lines for their parents' parents
     private void createFamilyTreeLines(Person person, Event event) {
@@ -281,10 +324,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     }
 
-    // method creates lines representing a person's life events on the map
-    private void createLifeEventsLines(String personID) {
-
-    }
 
     // method creates a line connecting a person to their spouse's birth event
     private void createSpouseLine(Person person, Event event) {

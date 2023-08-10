@@ -52,8 +52,11 @@ public class DataCache {
     private float[] colourBank;
     private final Map<String, Float> eventTypeColours = new HashMap<>(); // store colors associated with different event type
 
+    private static final String PERSONID_KEY = "PERSONID"; // person activity
 
 
+    // Lines
+    private final Map<String, ArrayList<Event>> lifeStoryEvents = new HashMap<>(); // get person's event order chronologically
 
     // First major step to set data after register/sign-in
     public void setData(String userPersonID, PersonResult people, EventResult events) {
@@ -103,6 +106,7 @@ public class DataCache {
             eventWithID.put(event.getEventID(),event);
 
             setEventTypesArray(event);
+            setLifeStoryEvents(event,event.getPersonID());
         }
 
     }
@@ -111,6 +115,65 @@ public class DataCache {
         String eventType = currentEvent.getEventType().toLowerCase();
         eventTypes.add(eventType);
     }
+
+    private void setLifeStoryEvents(Event currentEvent, String personID) {
+        if(lifeStoryEvents.containsKey(personID)) { // already hv key value
+            ArrayList<Event> oldLifeStoryList = lifeStoryEvents.get(personID);
+
+            // Birth event
+            if(currentEvent.getEventType().equalsIgnoreCase("birth")) {
+                oldLifeStoryList.add(0,currentEvent);
+            }
+            // Death event
+            else if(currentEvent.getEventType().equalsIgnoreCase("death")) {
+                int lastIndex = oldLifeStoryList.size();
+                oldLifeStoryList.add(lastIndex, currentEvent);
+
+            }
+            // Events other than Birth & Death
+            else {
+
+                for(int i = 0; i < oldLifeStoryList.size(); i++) {
+                    Event eventToCompare = oldLifeStoryList.get(i);
+
+                    // events sorted primarily by year,
+                    if(currentEvent.getYear() < eventToCompare.getYear()) {
+                        oldLifeStoryList.add(i, currentEvent);
+                        break;
+                    }
+                    // and secondarily by event type normalized to lower-case
+                    else if(currentEvent.getYear() == eventToCompare.getYear()) {
+                        if(currentEvent.getEventType().toLowerCase().compareTo(eventToCompare.getEventType().toLowerCase()) < 0) {
+                            oldLifeStoryList.add(i, currentEvent);
+                            break;
+                        }
+                    }
+
+                    // if all the above criteria doesn't fit? none of the previous conditions are met
+                    if(i == oldLifeStoryList.size() - 1 ) {
+                        oldLifeStoryList.add(oldLifeStoryList.size(), currentEvent);
+                        break;
+                    }
+                }
+
+            }
+
+            // don't forget to update the List!!
+            lifeStoryEvents.put(personID, oldLifeStoryList);
+
+        }
+        // no key generated yet
+        else {
+            ArrayList<Event> newLifeStoryList = new ArrayList<>();
+            newLifeStoryList.add(currentEvent);
+            lifeStoryEvents.put(personID, newLifeStoryList);
+        }
+    }
+
+    public ArrayList<Event> getLifeStoryEventsForSpecifiedPerson(String personID) {
+        return lifeStoryEvents.get(personID);
+    }
+
     private void setColorBank() {
         colourBank = new float[]{BitmapDescriptorFactory.HUE_AZURE,
                 BitmapDescriptorFactory.HUE_BLUE,
@@ -134,6 +197,8 @@ public class DataCache {
         }
 
     }
+
+
 
 
     /*************************** General Getters ***************************/
