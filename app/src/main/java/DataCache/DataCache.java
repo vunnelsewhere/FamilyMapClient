@@ -136,6 +136,7 @@ public class DataCache {
                 for(int i = 0; i < oldLifeStoryList.size(); i++) {
                     Event eventToCompare = oldLifeStoryList.get(i);
 
+
                     // events sorted primarily by year,
                     if(currentEvent.getYear() < eventToCompare.getYear()) {
                         oldLifeStoryList.add(i, currentEvent);
@@ -162,7 +163,7 @@ public class DataCache {
             lifeStoryEvents.put(personID, oldLifeStoryList);
 
         }
-        // no key generated yet
+        // no key generated yet, nothing in the array so order does not matter
         else {
             ArrayList<Event> newLifeStoryList = new ArrayList<>();
             newLifeStoryList.add(currentEvent);

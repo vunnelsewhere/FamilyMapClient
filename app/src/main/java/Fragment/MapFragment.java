@@ -59,9 +59,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private ImageView textViewIcon;
 
     private Map<String, Float> markerColour = new HashMap<>();
+
     private Settings settings;
     private Polyline lifeStoryLine;
+    private Polyline spouseLine;
     public static final int ORANGE_DARK = 0xffff8800;
+    public static final int PURPLE = 0xFFAC4FC6;
+
     private static final String PERSONID_KEY = "PERSONID";
 
 
@@ -216,8 +220,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         textViewBox.setClickable(true); // set it to be clickable when a marker is clicked
         addListenerForTextView(textViewBox,currentPerson); // question here
 
-        // clear the 3 lines beforehead
-
         // draw the lines
         drawLinesBySettings(currentPerson, currentEvent);
 
@@ -269,17 +271,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     // method creates lines between events based on the selected settings
     private void drawLinesBySettings(Person selectedPerson, Event selectedEvent) {
+        // clear the 3 lines beforehead
 
         // Create Life Story Line
         if(settings.isLifeStoryLineOn()) {
             createLifeEventsLines(selectedPerson.getPersonID());
+        }
+
+        // Create Spouse Line
+        if(settings.isSpouseLineOn()) {
+            createSpouseLine(selectedPerson, selectedEvent);
         }
     }
 
 
     // method creates lines representing a person's life events on the map
     private void createLifeEventsLines(String personID) {
-        if(lifeStoryLine != null) { // clear previously generated lifestoryline for other person
+        if(lifeStoryLine != null) { // clear previously generated lifestoryline for other person (?)
             lifeStoryLine.remove();
         }
 
@@ -293,6 +301,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
 
         lifeStoryLine = map.addPolyline(new PolylineOptions().addAll(eventPoints).color(ORANGE_DARK)); // .color(Color.GREEN) OR .color(selfDefined)
+
+    }
+
+    // method creates a line connecting a person to their spouse's birth event
+    private void createSpouseLine(Person person, Event event) {
+        if(spouseLine != null) { // clear (?)
+            spouseLine.remove();
+        }
+        // no line is drawn if the person has no recorded spouse
+        if(person.getSpouseID() != null) {
+            Person spouse = dataCache.getPersonByID(person.getSpouseID());
+            Event spouseFirstEvent = dataCache.getLifeStoryEventsForSpecifiedPerson(spouse.getPersonID()).get(0); // spouseFirstEvent only accessible inside the if-block
+
+            LatLng startPoint = new LatLng(event.getLatitude(),event.getLongitude());
+            LatLng endPoint = new LatLng(spouseFirstEvent.getLatitude(),spouseFirstEvent.getLongitude());
+
+            spouseLine = map.addPolyline(new PolylineOptions().add(startPoint).add(endPoint).color(PURPLE));
+        }
+
 
     }
 
@@ -325,10 +352,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
 
-    // method creates a line connecting a person to their spouse's birth event
-    private void createSpouseLine(Person person, Event event) {
 
-    }
 
 
 
