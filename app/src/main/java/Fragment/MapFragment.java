@@ -63,8 +63,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private Settings settings;
     private Polyline lifeStoryLine;
     private Polyline spouseLine;
+
+    private Polyline familyTreeLine;
+
+    private ArrayList<Polyline> fatherSideLine = new ArrayList<>();
+    private ArrayList<Polyline> motherSideLine = new ArrayList<>();
     public static final int ORANGE_DARK = 0xffff8800;
     public static final int PURPLE = 0xFFAC4FC6;
+    public static final int BLUE_DARK = 0xff00008b;
+
+    private final float DEFAULT_LINE_WIDTH = 20.0f;
 
     private static final String PERSONID_KEY = "PERSONID";
 
@@ -282,6 +290,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         if(settings.isSpouseLineOn()) {
             createSpouseLine(selectedPerson, selectedEvent);
         }
+
+
+        // Create Family Tree Line
+        if(settings.isFamilyTreeLineOn()) {
+
+            if(fatherSideLine != null) {
+                for(Polyline line: fatherSideLine) {
+                    line.remove();
+                }
+            }
+
+            if(motherSideLine != null) {
+                for(Polyline line: motherSideLine) {
+                    line.remove();
+                }
+            }
+
+            createFamilyTreeLines(selectedPerson,selectedEvent,DEFAULT_LINE_WIDTH);
+        }
     }
 
 
@@ -325,19 +352,49 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
 
     // method creates lines connecting a person to their parents and recursively create lines for their parents' parents
-    private void createFamilyTreeLines(Person person, Event event) {
+    private void createFamilyTreeLines(Person currentPerson, Event currentEvent, float lineWidth) {
+
+        // father
+        if(currentPerson.getFatherID()!=null && settings.isShowFathersSide() && settings.isShowMaleEvents()) {
+            Person userFather = dataCache.getPersonByID(currentPerson.getFatherID());
+            ArrayList<Event> fatherEvents = dataCache.getLifeStoryEventsForSpecifiedPerson(userFather.getPersonID());
+            Event fatherFirstEvent = fatherEvents.get(0);
+            makeLinesForChildAndParent(currentEvent,fatherFirstEvent,"father",lineWidth);
+            createFamilyTreeLines(userFather,fatherFirstEvent,lineWidth - 5.0f);
+        }
+
+        // mother
+        if(currentPerson.getMotherID()!=null && settings.isShowMothersSide() && settings.isShowFemaleEvents()) {
+            Person userMother = dataCache.getPersonByID(currentPerson.getMotherID());
+            ArrayList<Event> motherEvents = dataCache.getLifeStoryEventsForSpecifiedPerson(userMother.getPersonID());
+            Event motherFirstEvent = motherEvents.get(0);
+            makeLinesForChildAndParent(currentEvent,motherFirstEvent,"mother",lineWidth);
+            createFamilyTreeLines(userMother,motherFirstEvent,lineWidth - 5.0f);
+        }
 
     }
 
-    // helper method for createFamilyTreeLines
-    // creates lines for the father and mother's sides
-    private void createParentSideLine(Person person, Event event, float lineWidth) {
-
-    }
 
     // method creates a line between a child event and its parent event
-    private void makeLinesBetweenChildAndParent(Event childEvent, Event parentEvent, String parent, float lineWidth) {
+    private void makeLinesForChildAndParent(Event childEvent, Event parentEvent, String parent, float lineWidth) {
 
+        LatLng startPoint = new LatLng(childEvent.getLatitude(),childEvent.getLongitude());
+        LatLng endPoint = new LatLng(parentEvent.getLatitude(),parentEvent.getLongitude());
+
+        PolylineOptions options = new PolylineOptions()
+                .add(startPoint)
+                .add(endPoint)
+                .color(BLUE_DARK)
+                .width(lineWidth);
+
+        familyTreeLine = map.addPolyline(options);
+
+        if(parent.equalsIgnoreCase("father")) {
+            fatherSideLine.add(familyTreeLine);
+        }
+        else if(parent.equalsIgnoreCase("mother")) {
+            motherSideLine.add(familyTreeLine);
+        }
     }
 
     // method removes all previously drawn lines from the map

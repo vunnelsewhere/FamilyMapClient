@@ -52,11 +52,20 @@ public class DataCache {
     private float[] colourBank;
     private final Map<String, Float> eventTypeColours = new HashMap<>(); // store colors associated with different event type
 
+
+
+    // For Person Activity
     private static final String PERSONID_KEY = "PERSONID"; // person activity
 
 
-    // Lines
+    // Lines/FamilyTreeLine
     private final Map<String, ArrayList<Event>> lifeStoryEvents = new HashMap<>(); // get person's event order chronologically
+
+    private final Set<Event> maleEvents = new HashSet<>(); // gender-based, male
+    private final Set<Event> femaleEvents = new HashSet<>(); // gender-based, female
+
+    private final Set<Person> maternalAncestors = new HashSet<>(); // mother's side
+    private final Set<Person> paternalAncestors = new HashSet<>(); // father's side
 
     // First major step to set data after register/sign-in
     public void setData(String userPersonID, PersonResult people, EventResult events) {
@@ -64,6 +73,8 @@ public class DataCache {
         // Main Activity
         setPeople(people);
         user = getPersonByID(userPersonID);
+        setMother(userPersonID); // cannot set without setting user first
+        setFather(userPersonID);
 
         // event data
         setEvents(events);
@@ -94,19 +105,71 @@ public class DataCache {
             // Add the people for the user
             allPeople.add(person);
             peopleWithID.put(person.getPersonID(), person);
+
+            // Set Mother's side ancestors
+            //setMother(person.getPersonID());
+
+            // Set Father's side ancestors
+            //setFather(person.getPersonID());
         }
     }
+
+    private void setMother(String personID) {
+        Person currentUser = getPersonByID(personID);
+
+        String userMotherID = currentUser.getMotherID();
+        Person userMother = getPersonByID(userMotherID);
+
+        if(userMotherID != null) {
+            maternalAncestors.add(userMother);
+            getAncestorsRecurse(userMotherID);
+        }
+    }
+
+    private void setFather(String personID) {
+        Person currentUser = getPersonByID(personID);
+
+        String userFatherID = currentUser.getFatherID();
+        Person userFather = getPersonByID(userFatherID);
+
+        if(userFatherID != null) {
+            paternalAncestors.add(userFather);
+            getAncestorsRecurse(userFatherID);
+        }
+
+    }
+
+    private void getAncestorsRecurse(String personID) {
+        Person currentPerson = getPersonByID(personID);
+
+        String currentPersonMotherID = currentPerson.getMotherID();
+        String currentPersonFatherID = currentPerson.getFatherID();
+
+        if(currentPersonMotherID != null) {
+            setMother(currentPersonMotherID);
+            setFather(currentPersonMotherID);
+        }
+
+        if(currentPersonFatherID != null) {
+            setMother(currentPersonFatherID);
+            setFather(currentPersonFatherID);
+        }
+    }
+
 
     public void setEvents(EventResult result) {
         ArrayList<Event> allEventsList = result.getData();
 
-        // Loop through all the event
+        // Loop through all the event - distribute events into different sets of array
         for(Event event: allEventsList) {
             allEvent.add(event);
             eventWithID.put(event.getEventID(),event);
 
             setEventTypesArray(event);
             setLifeStoryEvents(event,event.getPersonID());
+
+            setMaleEventArray(event);
+            setFemaleEventArray(event);
         }
 
     }
@@ -171,6 +234,22 @@ public class DataCache {
         }
     }
 
+    private void setMaleEventArray(Event currentEvent) {
+        Person currentPerson = getPersonByID(currentEvent.getPersonID());
+        if(currentPerson.getGender().equalsIgnoreCase("m")) {
+            maleEvents.add(currentEvent);
+        }
+
+    }
+
+    private void setFemaleEventArray(Event currentEvent) {
+        Person currentPerson = getPersonByID(currentEvent.getPersonID());
+        if(currentPerson.getGender().equalsIgnoreCase("f")) {
+            femaleEvents.add(currentEvent);
+        }
+
+    }
+
     public ArrayList<Event> getLifeStoryEventsForSpecifiedPerson(String personID) {
         return lifeStoryEvents.get(personID);
     }
@@ -203,6 +282,23 @@ public class DataCache {
 
 
     /*************************** General Getters ***************************/
+
+    public Set<Event> getFemaleEvents() {
+        return femaleEvents;
+    }
+
+    public Set<Event> getMaleEvents() {
+        return maleEvents;
+    }
+
+    public Set<Person> getMaternalAncestors() {
+        return maternalAncestors;
+    }
+
+    public Set<Person> getPaternalAncestors() {
+        return paternalAncestors;
+    }
+
 
     public Set<Person> getAllPeople() {
         return allPeople;
