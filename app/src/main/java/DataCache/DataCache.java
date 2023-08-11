@@ -121,7 +121,7 @@ public class DataCache {
         Person userMother = getPersonByID(userMotherID);
 
         if(userMotherID != null) {
-            maternalAncestors.add(userMother);
+            maternalAncestors.add(userMother); // don't forget you need to filter Sheila's mum
             getAncestorsRecurse(userMotherID);
         }
     }
@@ -133,7 +133,7 @@ public class DataCache {
         Person userFather = getPersonByID(userFatherID);
 
         if(userFatherID != null) {
-            paternalAncestors.add(userFather);
+            paternalAncestors.add(userFather); // don't forget you need to filter Sheila's dad
             getAncestorsRecurse(userFatherID);
         }
 
@@ -146,13 +146,16 @@ public class DataCache {
         String currentPersonFatherID = currentPerson.getFatherID();
 
         if(currentPersonMotherID != null) {
-            setMother(currentPersonMotherID);
-            setFather(currentPersonMotherID);
+            Person mother = getPersonByID(currentPersonMotherID);
+            maternalAncestors.add(mother);
+            getAncestorsRecurse(currentPersonMotherID);
+
         }
 
         if(currentPersonFatherID != null) {
-            setMother(currentPersonFatherID);
-            setFather(currentPersonFatherID);
+            Person father = getPersonByID(currentPersonFatherID);
+            paternalAncestors.add(father);
+            getAncestorsRecurse(currentPersonFatherID);
         }
     }
 
@@ -344,7 +347,9 @@ public class DataCache {
         return eventTypeColours;
     }
 }
-
+/*
+ * Side note: calling the original function in a recursive function can be problematic!!
+ */
 
 // List<Person> people;
 // List<Event> event;

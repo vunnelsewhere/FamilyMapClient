@@ -39,7 +39,8 @@ public class Settings {
         Set<Event> filteredEvent = new HashSet<>();
         filteredEvent.addAll(allEvents);
 
-        if(!showFathersSide) { // don't just do filteredEVent.removeAll(paternalAncestors) bcuz also removed mother's paternalAncestors
+        if(!showFathersSide) { // don't just do filteredEvent.removeAll(paternalAncestors) bcuz also removed mother's paternalAncestors
+
             for(Person person: dataCache.getAllPeople()) {
                 if(dataCache.getPaternalAncestors().contains(person)) {
                     ArrayList<Event> eventList = dataCache.getLifeStoryEventsForSpecifiedPerson(person.getPersonID());
@@ -47,15 +48,22 @@ public class Settings {
 
                 }
             }
+
+
+            // filteredEvent.removeAll(dataCache.getPaternalAncestors());
         }
 
         if(!showMothersSide) { // only father side events
+
             for(Person person: dataCache.getAllPeople()) {
                 if(dataCache.getMaternalAncestors().contains(person)) {
                     ArrayList<Event> eventList = dataCache.getLifeStoryEventsForSpecifiedPerson(person.getPersonID());
                     filteredEvent.removeAll(eventList); // remove all father events with specified user
                 }
             }
+
+
+            // filteredEvent.removeAll(dataCache.getMaternalAncestors()); // cannot remove person from event
         }
 
         if(!showMaleEvents) {
