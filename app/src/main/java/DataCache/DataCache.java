@@ -278,6 +278,22 @@ public class DataCache {
 
     }
 
+    // Clear data and restore default settings
+    // create a separate function in map fragment to restore default settings
+    public void clearAll() {
+        allPeople.clear();
+        allEvent.clear();
+        peopleWithID.clear();
+        eventWithID.clear();
+        eventTypes.clear();
+        eventTypeColours.clear();
+        maleEvents.clear();
+        femaleEvents.clear();
+        maternalAncestors.clear();
+        paternalAncestors.clear();
+
+    }
+
 
 
 

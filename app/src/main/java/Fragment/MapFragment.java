@@ -186,23 +186,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     // used to show all event markers on the map
     public void createEventMarkersBySetting() {
 
-        /*
 
-        Set<Event> allEvents = dataCache.getAllEvent();
-        float customHue = 220;
-
-        // Create event markers pulled from data cache
-        for(Event event: allEvents) {
-            LatLng currentPosition = new LatLng(event.getLatitude(),event.getLongitude());
-            Marker marker = map.addMarker(new MarkerOptions()
-                    .position(currentPosition)
-                    .icon(BitmapDescriptorFactory.defaultMarker(customHue)));
-            marker.setTag(event);
-        }
-
-         */
-
-        Set<Event> allEvents = dataCache.getAllEvent();
+        Set<Event> allEvents = settings.settingFilters(); // settings.settingFilters(); // dataCache.getAllEvent()
         markerColour = dataCache.getEventTypeColours();
 
         for(Event event: allEvents) {
@@ -397,6 +382,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if(map != null) {
+            map.clear();
+            createEventMarkersBySetting();
+            // drawLinesBySettings();
+        }
+    }
+
+
+
     // method removes all previously drawn lines from the map
     private void clearLines() {
 
@@ -423,3 +421,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         // map.setOnMapLoadedCallback(...) above) to here.
     }
 } // End of Class
+
+
+
+
+ /*
+
+        Set<Event> allEvents = dataCache.getAllEvent();
+        float customHue = 220;
+
+        // Create event markers pulled from data cache
+        for(Event event: allEvents) {
+            LatLng currentPosition = new LatLng(event.getLatitude(),event.getLongitude());
+            Marker marker = map.addMarker(new MarkerOptions()
+                    .position(currentPosition)
+                    .icon(BitmapDescriptorFactory.defaultMarker(customHue)));
+            marker.setTag(event);
+        }
+
+         */

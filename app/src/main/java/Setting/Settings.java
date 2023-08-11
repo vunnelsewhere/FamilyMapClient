@@ -1,6 +1,10 @@
 package Setting;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import DataCache.DataCache;
+import Model.*;
 
 public class Settings {
 
@@ -15,6 +19,7 @@ public class Settings {
     }
 
     // Variable Declarations - Settings menu
+    private DataCache dataCache;
     private static boolean isLifeStoryLineOn = true;
     private static boolean isFamilyTreeLineOn = true;
     private static boolean isSpouseLineOn = true;
@@ -24,6 +29,33 @@ public class Settings {
     private static boolean showFemaleEvents = true;
 
     private boolean isEventActivity = false;
+
+
+    // Filter Settings (4)
+    public Set<Event> settingFilters() {
+        dataCache = DataCache.getInstance();
+        Set<Event> allEvents = dataCache.getAllEvent();
+        Set<Event> filteredEvent = new HashSet<>();
+        filteredEvent.addAll(allEvents);
+
+        if(!showFathersSide) {
+            filteredEvent.removeAll(dataCache.getPaternalAncestors());
+        }
+
+        if(!showMothersSide) {
+            filteredEvent.removeAll(dataCache.getMaternalAncestors());
+        }
+
+        if(!showMaleEvents) {
+            filteredEvent.removeAll(dataCache.getMaleEvents());
+        }
+
+        if(!showFemaleEvents) {
+            filteredEvent.removeAll(dataCache.getFemaleEvents());
+        }
+
+        return filteredEvent;
+    }
 
 
     // Setters and Getters
