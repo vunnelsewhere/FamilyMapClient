@@ -74,6 +74,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
     private final float DEFAULT_LINE_WIDTH = 20.0f;
 
+    private Person storeCurrentPerson;
+    private Event storeCurrentEvent;
+
     private static final String PERSONID_KEY = "PERSONID";
 
 
@@ -205,7 +208,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
         Event currentEvent = (Event) marker.getTag(); // current clicked event
+        storeCurrentEvent = currentEvent;
         Person currentPerson = dataCache.getPersonByID(currentEvent.getPersonID()); // person associated with the event
+        storeCurrentPerson = currentPerson;
 
         updatetextViewIcon(currentPerson);
         updatetextViewBox(currentPerson,currentEvent);
@@ -382,6 +387,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
     }
 
+
+    // Go back to the map with new Settings!!!!!
     @Override
     public void onResume() {
         super.onResume();
@@ -389,7 +396,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         if(map != null) {
             map.clear();
             createEventMarkersBySetting();
-            // drawLinesBySettings();
+            drawLinesBySettings(storeCurrentPerson,storeCurrentEvent);
         }
     }
 

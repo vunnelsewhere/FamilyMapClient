@@ -1,5 +1,6 @@
 package Setting;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,12 +39,23 @@ public class Settings {
         Set<Event> filteredEvent = new HashSet<>();
         filteredEvent.addAll(allEvents);
 
-        if(!showFathersSide) {
-            filteredEvent.removeAll(dataCache.getPaternalAncestors());
+        if(!showFathersSide) { // don't just do filteredEVent.removeAll(paternalAncestors) bcuz also removed mother's paternalAncestors
+            for(Person person: dataCache.getAllPeople()) {
+                if(dataCache.getPaternalAncestors().contains(person)) {
+                    ArrayList<Event> eventList = dataCache.getLifeStoryEventsForSpecifiedPerson(person.getPersonID());
+                    filteredEvent.removeAll(eventList); // remove all father events with specified user
+
+                }
+            }
         }
 
-        if(!showMothersSide) {
-            filteredEvent.removeAll(dataCache.getMaternalAncestors());
+        if(!showMothersSide) { // only father side events
+            for(Person person: dataCache.getAllPeople()) {
+                if(dataCache.getMaternalAncestors().contains(person)) {
+                    ArrayList<Event> eventList = dataCache.getLifeStoryEventsForSpecifiedPerson(person.getPersonID());
+                    filteredEvent.removeAll(eventList); // remove all father events with specified user
+                }
+            }
         }
 
         if(!showMaleEvents) {
