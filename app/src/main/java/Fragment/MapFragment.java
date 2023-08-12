@@ -306,10 +306,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
 
             if((gender.equals("m") && settings.isShowFemaleEvents())
-                    || (gender.equals("f") && settings.isShowMaleEvents()))
-            // Create Spouse Line
-            if (settings.isSpouseLineOn()) {
-                createSpouseLine(selectedPerson, selectedEvent);
+                    || (gender.equals("f") && settings.isShowMaleEvents())) {
+                // Create Spouse Line
+                if (settings.isSpouseLineOn()) {
+                    createSpouseLine(selectedPerson, selectedEvent);
+                }
             }
 
 
