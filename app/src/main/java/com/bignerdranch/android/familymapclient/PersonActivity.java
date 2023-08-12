@@ -218,6 +218,71 @@ public class PersonActivity extends AppCompatActivity {
         }
 
         private void initializeFamilyView(View familyView, int childPosition) {
+            Person childPerson = familyList.get(childPosition);
+
+            if(childPerson != null) {
+
+                // Image View
+                ImageView icon = familyView.findViewById(R.id.genderIcon);
+                Drawable genderIcon;
+
+                if(childPerson.getGender().equals("m")) {
+                    genderIcon = new IconDrawable(PersonActivity.this, FontAwesomeIcons.fa_male)
+                            .colorRes(R.color.maleIcon);
+                } else {
+                    genderIcon = new IconDrawable(PersonActivity.this, FontAwesomeIcons.fa_female)
+                            .colorRes(R.color.femaleIcon);
+                }
+
+                icon.setImageDrawable(genderIcon);
+
+                // Text View - person name
+                TextView name = familyView.findViewById(R.id.thePersonName);
+                String fullName = childPerson.getFirstName() + " " + childPerson.getLastName();
+                name.setText(fullName);
+
+                // Text View - relationship
+                TextView relationship = familyView.findViewById(R.id.relationship);
+                String relation = "";
+
+                if(childPerson.getPersonID().equals(clickedPerson.getFatherID())) {
+                    relation = "Father";
+                }
+
+                if(childPerson.getPersonID().equals(clickedPerson.getMotherID())) {
+                    relation = "Mother";
+                }
+
+                if(childPerson.getPersonID().equals(clickedPerson.getSpouseID())) {
+                    relation = "Spouse";
+                }
+
+                if(childPerson.getFatherID() != null) {
+                    if(childPerson.getFatherID().equals(clickedPerson.getPersonID())) {
+                        relation = "Child";
+                    }
+                }
+
+                if(childPerson.getMotherID() != null) {
+                    if(childPerson.getMotherID().equals(clickedPerson.getPersonID())) {
+                        relation = "Child";
+                    }
+                }
+
+                relationship.setText(relation);
+
+                // add listener
+                familyView.setOnClickListener(new View.OnClickListener(){
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(PersonActivity.this, PersonActivity.class);
+                        intent.putExtra(PERSONID_KEY, childPerson.getPersonID());
+                        startActivity(intent);
+                    }
+                });
+
+
+            }
 
         }
 
