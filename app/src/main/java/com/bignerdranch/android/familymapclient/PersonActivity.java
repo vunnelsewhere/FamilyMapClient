@@ -18,15 +18,18 @@ import android.widget.TextView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import DataCache.DataCache;
+import Setting.Settings;
 import Model.*;
 
 public class PersonActivity extends AppCompatActivity {
 
     // Variable Declarations
     private DataCache dataCache;
+    private Settings settings;
     private static final String PERSONID_KEY = "personID";
     private static final String EVENTID_KEY = "eventID";
 
@@ -43,6 +46,7 @@ public class PersonActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("Family Map: Person");
 
         dataCache = DataCache.getInstance();
+        settings = Settings.getInstance();
 
         // Grab the clicked person
         Intent intent = getIntent();
@@ -57,14 +61,22 @@ public class PersonActivity extends AppCompatActivity {
         clickedLastName.setText(clickedPerson.getLastName());
 
         String gender = clickedPerson.getGender();
-        if(gender.equals("m")) {
+        if (gender.equals("m")) {
             clickedGender.setText("Male");
         } else if (gender.equals("f")) {
             clickedGender.setText("Female");
         }
 
         familyList = dataCache.getFamilyList(clickedPerson);
-        lifeEventsList = dataCache.getLifeStoryEventsForSpecifiedPerson(clickedPerson.getPersonID());
+
+        if((clickedPerson.getGender().equals("m") && !settings.isShowMaleEvents())
+                ||(clickedPerson.getGender().equals("f") && !settings.isShowFemaleEvents())) {
+            lifeEventsList = new ArrayList<>(); // don't set that to null
+        }
+        else {
+            lifeEventsList = dataCache.getLifeStoryEventsForSpecifiedPerson(clickedPerson.getPersonID());
+        }
+
 
         // Expandable List - set the adapter for the ExpandableListView in onCreate(Bundle)
         ExpandableListView expandable = findViewById(R.id.expandableListView);
@@ -87,7 +99,7 @@ public class PersonActivity extends AppCompatActivity {
 
         @Override
         public int getChildrenCount(int groupPosition) { // return the number of children in the group
-            switch(groupPosition) {
+            switch (groupPosition) {
                 case LIFE_EVENTS_POSITION:
                     return lifeEventsList.size();
                 case FAMILY_POSITION:
@@ -99,7 +111,7 @@ public class PersonActivity extends AppCompatActivity {
 
         @Override
         public Object getGroup(int groupPosition) {
-            switch(groupPosition) {
+            switch (groupPosition) {
                 case LIFE_EVENTS_POSITION:
                     return lifeEventsList.size();
                 case FAMILY_POSITION:
@@ -112,7 +124,7 @@ public class PersonActivity extends AppCompatActivity {
         // each group with different child
         @Override
         public Object getChild(int groupPosition, int childPosition) {
-            switch(groupPosition) {
+            switch (groupPosition) {
                 case LIFE_EVENTS_POSITION:
                     return lifeEventsList.get(childPosition);
                 case FAMILY_POSITION:
@@ -140,13 +152,13 @@ public class PersonActivity extends AppCompatActivity {
 
         @Override
         public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            if(convertView == null) {
+            if (convertView == null) {
                 convertView = getLayoutInflater().inflate(R.layout.list_item_group, parent, false);
             }
 
             TextView titleView = convertView.findViewById(R.id.listTitle);
 
-            switch(groupPosition) {
+            switch (groupPosition) {
                 case LIFE_EVENTS_POSITION:
                     titleView.setText(R.string.eventTitle);
                     break;
@@ -164,7 +176,7 @@ public class PersonActivity extends AppCompatActivity {
         public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             View itemView;
 
-            switch(groupPosition) {
+            switch (groupPosition) {
                 case LIFE_EVENTS_POSITION:
                     itemView = getLayoutInflater().inflate(R.layout.event, parent, false);
                     initializeLifeEventView(itemView, childPosition);
@@ -184,7 +196,8 @@ public class PersonActivity extends AppCompatActivity {
             Event childEvent = lifeEventsList.get(childPosition);
             Person eventPerson = dataCache.getPersonByID(childEvent.getPersonID());
 
-            if(childEvent != null) {
+
+            if (childEvent != null) {
 
                 // Image View
                 ImageView icon = lifeEventView.findViewById(R.id.markerIcon);
@@ -205,7 +218,7 @@ public class PersonActivity extends AppCompatActivity {
                 personName.setText(fullName);
 
                 // add listener
-                lifeEventView.setOnClickListener(new View.OnClickListener(){
+                lifeEventView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(PersonActivity.this, EventActivity.class);
@@ -215,18 +228,19 @@ public class PersonActivity extends AppCompatActivity {
                 });
             }
 
+
         }
 
         private void initializeFamilyView(View familyView, int childPosition) {
             Person childPerson = familyList.get(childPosition);
 
-            if(childPerson != null) {
+            if (childPerson != null) {
 
                 // Image View
                 ImageView icon = familyView.findViewById(R.id.genderIcon);
                 Drawable genderIcon;
 
-                if(childPerson.getGender().equals("m")) {
+                if (childPerson.getGender().equals("m")) {
                     genderIcon = new IconDrawable(PersonActivity.this, FontAwesomeIcons.fa_male)
                             .colorRes(R.color.maleIcon);
                 } else {
@@ -245,26 +259,26 @@ public class PersonActivity extends AppCompatActivity {
                 TextView relationship = familyView.findViewById(R.id.relationship);
                 String relation = "";
 
-                if(childPerson.getPersonID().equals(clickedPerson.getFatherID())) {
+                if (childPerson.getPersonID().equals(clickedPerson.getFatherID())) {
                     relation = "Father";
                 }
 
-                if(childPerson.getPersonID().equals(clickedPerson.getMotherID())) {
+                if (childPerson.getPersonID().equals(clickedPerson.getMotherID())) {
                     relation = "Mother";
                 }
 
-                if(childPerson.getPersonID().equals(clickedPerson.getSpouseID())) {
+                if (childPerson.getPersonID().equals(clickedPerson.getSpouseID())) {
                     relation = "Spouse";
                 }
 
-                if(childPerson.getFatherID() != null) {
-                    if(childPerson.getFatherID().equals(clickedPerson.getPersonID())) {
+                if (childPerson.getFatherID() != null) {
+                    if (childPerson.getFatherID().equals(clickedPerson.getPersonID())) {
                         relation = "Child";
                     }
                 }
 
-                if(childPerson.getMotherID() != null) {
-                    if(childPerson.getMotherID().equals(clickedPerson.getPersonID())) {
+                if (childPerson.getMotherID() != null) {
+                    if (childPerson.getMotherID().equals(clickedPerson.getPersonID())) {
                         relation = "Child";
                     }
                 }
@@ -272,7 +286,7 @@ public class PersonActivity extends AppCompatActivity {
                 relationship.setText(relation);
 
                 // add listener
-                familyView.setOnClickListener(new View.OnClickListener(){
+                familyView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Intent intent = new Intent(PersonActivity.this, PersonActivity.class);
@@ -287,17 +301,13 @@ public class PersonActivity extends AppCompatActivity {
         }
 
 
-
-
-
-
-
         @Override
         public boolean isChildSelectable(int i, int i1) {
+
             return true;
+
         }
     }
-
 
 
     // UP button
@@ -312,3 +322,18 @@ public class PersonActivity extends AppCompatActivity {
         return true;
     }
 }
+
+
+
+/*
+  if((clickedPerson.getGender().equals("m") && !settings.isShowMaleEvents())
+                    ||(clickedPerson.getGender().equals("f") && !settings.isShowFemaleEvents())) {
+
+
+
+
+
+ */
+
+
+

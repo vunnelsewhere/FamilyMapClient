@@ -127,13 +127,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         UiSettings setting = map.getUiSettings();
         setting.setZoomControlsEnabled(true);
 
-        getDefaultSettings(); // all settings should be on
-
-        // Add a marker in Sydney and move the camera
-        //LatLng sydney = new LatLng(-34, 151);
-        //map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon(BitmapDescriptorFactory.defaultMarker(200)));
-        // map.animateCamera(CameraUpdateFactory.newLatLng(sydney));
-
         // Set markers for all events (appear when the map is first shown)
         createEventMarkersBySetting();
 
@@ -155,6 +148,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
             }
         }
+
+        // filter everything - don't have this before the event activity checking block
+        // UPDATES: hving this has caused a default setting everytime from event activity back to
+            // main map fragment, hv those default settings as default values instead!
+        // getDefaultSettings(); // all settings should be on
+
+        // Add a marker in Sydney and move the camera
+        //LatLng sydney = new LatLng(-34, 151);
+        //map.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney").icon(BitmapDescriptorFactory.defaultMarker(200)));
+        // map.animateCamera(CameraUpdateFactory.newLatLng(sydney));
+
+
+
+
+
 
 
 

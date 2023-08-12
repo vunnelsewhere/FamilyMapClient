@@ -77,6 +77,18 @@ public class Settings {
         return filteredEvent;
     }
 
+    public void reset() {
+        isLifeStoryLineOn = true;
+        isFamilyTreeLineOn = true;
+        isSpouseLineOn = true;
+        showFathersSide = true;
+        showMothersSide = true;
+        showMaleEvents = true;
+        showFemaleEvents = true;
+
+        isEventActivity = false;
+    }
+
 
     // Setters and Getters
 

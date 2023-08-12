@@ -116,6 +116,7 @@ public class SettingsActivity extends AppCompatActivity  {
             @Override
             public void onClick(View view) {
                 dataCache.clearAll();
+                settings.reset(); // newly added
 
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

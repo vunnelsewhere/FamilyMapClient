@@ -296,6 +296,8 @@ public class DataCache {
         maternalAncestors.clear();
         paternalAncestors.clear();
 
+
+
     }
 
     public List<Person> getFamilyList(Person thePerson) {
