@@ -135,4 +135,12 @@ public class Settings {
     public static void setShowFemaleEvents(boolean showFemaleEvents) {
         Settings.showFemaleEvents = showFemaleEvents;
     }
+
+    public boolean isEventActivity() {
+        return isEventActivity;
+    }
+
+    public void setEventActivity(boolean eventActivity) {
+        isEventActivity = eventActivity;
+    }
 }

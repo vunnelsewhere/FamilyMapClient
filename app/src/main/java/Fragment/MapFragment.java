@@ -78,6 +78,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private Event storeCurrentEvent;
 
     private static final String PERSONID_KEY = "personID";
+    private static final String EVENTID_KEY = "eventID";
+
+    public MapFragment() {
+        // Required empty public constructor
+    }
 
 
     // Overridden to inflate the layout, set up the map, and initialize other necessary components
@@ -119,8 +124,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map.setOnMapLoadedCallback(this);
 
         // interactive map allows the user to zoom in and out
-        UiSettings settings = map.getUiSettings();
-        settings.setZoomControlsEnabled(true);
+        UiSettings setting = map.getUiSettings();
+        setting.setZoomControlsEnabled(true);
 
         getDefaultSettings(); // all settings should be on
 
@@ -131,6 +136,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         // Set markers for all events (appear when the map is first shown)
         createEventMarkersBySetting();
+
+
+        if(settings.isEventActivity()) {
+            setHasOptionsMenu(false);
+
+            if(getArguments().getString("eventID") != null) {
+                storeCurrentEvent = dataCache.getEventWithID(getArguments().getString("eventID"));
+                storeCurrentPerson = dataCache.getPersonByID(storeCurrentEvent.getPersonID());
+
+                // center event
+                map.animateCamera(CameraUpdateFactory.newLatLng(new LatLng(storeCurrentEvent.getLatitude(), storeCurrentEvent.getLongitude())));
+
+                updatetextViewIcon(storeCurrentPerson);
+                updatetextViewBox(storeCurrentPerson, storeCurrentEvent);
+
+                drawLinesBySettings(storeCurrentPerson, storeCurrentEvent);
+
+            }
+        }
+
+
 
         map.setOnMarkerClickListener(this); // need this for markers to be clickable, so onMarkerClick will function
 
@@ -270,34 +296,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     // method creates lines between events based on the selected settings
     private void drawLinesBySettings(Person selectedPerson, Event selectedEvent) {
         // clear the 3 lines beforehead
+        String gender = selectedPerson.getGender();
 
-        // Create Life Story Line
-        if(settings.isLifeStoryLineOn()) {
-            createLifeEventsLines(selectedPerson.getPersonID());
-        }
-
-        // Create Spouse Line
-        if(settings.isSpouseLineOn()) {
-            createSpouseLine(selectedPerson, selectedEvent);
-        }
-
-
-        // Create Family Tree Line
-        if(settings.isFamilyTreeLineOn()) {
-
-            if(fatherSideLine != null) {
-                for(Polyline line: fatherSideLine) {
-                    line.remove();
-                }
+        if((gender.equals("m") && settings.isShowMaleEvents())
+                || (gender.equals("f") && settings.isShowFemaleEvents())) {
+            // Create Life Story Line
+            if (settings.isLifeStoryLineOn()) {
+                createLifeEventsLines(selectedPerson.getPersonID());
             }
 
-            if(motherSideLine != null) {
-                for(Polyline line: motherSideLine) {
-                    line.remove();
-                }
+            if((gender.equals("m") && settings.isShowFemaleEvents())
+                    || (gender.equals("f") && settings.isShowMaleEvents()))
+            // Create Spouse Line
+            if (settings.isSpouseLineOn()) {
+                createSpouseLine(selectedPerson, selectedEvent);
             }
 
-            createFamilyTreeLines(selectedPerson,selectedEvent,DEFAULT_LINE_WIDTH);
+
+            if(settings.isShowMothersSide() || settings.isShowFathersSide()) {
+                // Create Family Tree Line
+                if (settings.isFamilyTreeLineOn()) {
+
+                    if (fatherSideLine != null) {
+                        for (Polyline line : fatherSideLine) {
+                            line.remove();
+                        }
+                    }
+
+                    if (motherSideLine != null) {
+                        for (Polyline line : motherSideLine) {
+                            line.remove();
+                        }
+                    }
+
+                    createFamilyTreeLines(selectedPerson, selectedEvent, DEFAULT_LINE_WIDTH);
+                }
+            }
         }
     }
 

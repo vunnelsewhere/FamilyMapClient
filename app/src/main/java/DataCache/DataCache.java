@@ -40,6 +40,7 @@ public class DataCache {
 
     // Main Activity
     private Person user;
+    private Event specifiedEvent;
 
     private final Set<Person> allPeople = new HashSet<>();
     private final Map<String, Person> peopleWithID = new HashMap<>(); // personID, person
@@ -373,8 +374,17 @@ public class DataCache {
         return allEvent;
     }
 
-    public Map<String, Event> getEventWithID() {
-        return eventWithID;
+    public Event getEventWithID(String eventID) { // this is to get Events of one person
+        return eventWithID.get(eventID);
+    }
+
+    public Event getEventFromALL(String selectedEventID) {
+        for(Event event: allEvent) {
+            if(event.getEventID().equals(selectedEventID)) {
+                specifiedEvent = event;
+            }
+        }
+        return specifiedEvent;
     }
 
     public Set<String> getEventTypes() {
