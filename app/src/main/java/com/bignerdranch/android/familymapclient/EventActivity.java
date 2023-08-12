@@ -6,6 +6,9 @@ import android.os.Bundle;
 
 public class EventActivity extends AppCompatActivity {
 
+    // Variable Declarations
+    private static final String EVENTID_KEY = "eventID";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

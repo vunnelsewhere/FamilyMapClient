@@ -77,7 +77,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private Person storeCurrentPerson;
     private Event storeCurrentEvent;
 
-    private static final String PERSONID_KEY = "PERSONID";
+    private static final String PERSONID_KEY = "personID";
 
 
     // Overridden to inflate the layout, set up the map, and initialize other necessary components

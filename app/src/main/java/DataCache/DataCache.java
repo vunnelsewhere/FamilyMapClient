@@ -297,6 +297,48 @@ public class DataCache {
 
     }
 
+    public List<Person> getFamilyList(Person thePerson) {
+        List<Person> familyList = new ArrayList<>();
+
+        String fatherID = thePerson.getFatherID();
+        String motherID = thePerson.getMotherID();
+        String spouseID = thePerson.getSpouseID();
+
+
+        if(fatherID != null) {
+            familyList.add(getPersonByID(fatherID));
+        }
+
+        if(motherID != null) {
+            familyList.add(getPersonByID(motherID));
+        }
+
+        if(spouseID != null) {
+            familyList.add(getPersonByID(spouseID));
+        }
+
+        for(Person person: allPeople) {
+            if(person.getPersonID() != thePerson.getPersonID()) { // don't add same person
+
+                // this person has father
+                if(person.getFatherID() != null ) {
+                    if(person.getFatherID().equals(thePerson.getPersonID())) {
+                        familyList.add(person);
+                    }
+                }
+
+                // this person has mother
+                if(person.getMotherID() != null) {
+                    if(person.getMotherID().equals(thePerson.getPersonID())) {
+                        familyList.add(person);
+                    }
+                }
+            }
+        }
+
+        return familyList;
+    }
+
 
 
 

@@ -36,7 +36,13 @@
 
     <!--Person Activity-->
     <string name="personActivityMessage">This is my person activity</string>
-
+    <string name="clickedfirstName">First Name</string>
+    <string name="clickedlastName">Last Name</string>
+    <string name="clickedlastNameGender">Gender</string>
+    <string name="eventTitle">LIFE EVENTS</string>
+    <string name="familyTitle">FAMILY</string>
+    <string name="eventIcon"></string>
+    <string name="genderIcon"></string>
 
     <!--Search Activity-->
     <string name= "searchActivityMessage">This is my search activity</string>
